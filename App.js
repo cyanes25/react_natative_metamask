@@ -1,180 +1,90 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from './src/Home/Home';
+import Banks from './src/Banks/Banks';
+import Wallets from './src/Wallets/Wallets';
+import Deposit from './src/Mint/Mint';
+import Withdraw from './src/Burn/Burn';
+import Profile from './src/Profile/Profile';
+import Limits from './src/Limits/Limits';
+import 'react-native-gesture-handler';
+import DelayedWithdrawals from './src/DelayedWithdrawals/DelayedWithdrawals';
+import Login from './src/Login/Login';
+import AddWallet from './src/AddWallet/AddWallet';
 
-import React, {useEffect, useState} from 'react';
-import {
-  AppState,
-  AppStateStatus,
-  Button,
-  Linking,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  TouchableOpacity
-} from 'react-native';
+const Tab = createBottomTabNavigator();
+const HomeStackNavigator = createStackNavigator();
+const Stack = createStackNavigator();
 
-import {MetaMaskSDK} from '@metamask/sdk';
-import {
-  CommunicationLayerMessage,
-  CommunicationLayerPreference,
-  DappMetadata,
-  MessageType,
-  RemoteCommunication,
-} from '@metamask/sdk-communication-layer';
-import crypto from 'crypto';
-import {encrypt} from 'eciesjs';
-import {LogBox} from 'react-native';
-import BackgroundTimer from 'react-native-background-timer';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-
-
-// TODO how to properly make sure we only try to open link when the app is active?
-// current problem is that sdk declaration is outside of the react scope so I cannot directly verify the state
-// hence usage of a global variable.
-let canOpenLink = true;
-
-const MMSDK = new MetaMaskSDK({
-  openDeeplink: (link: string) => {
-    if (canOpenLink) {
-      Linking.openURL(link);
-    }
-  },
-  timer: BackgroundTimer,
-  enableDebug: true,
-  dappMetadata: {
-    url: 'ReactNativeTS',
-    name: 'ReactNativeTS',
-  },
-  storage: {
-    enabled: true,
-  },
-});
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', handleAppState);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  const handleAppState = (appState: AppStateStatus) => {
-    console.debug(`AppState change: ${appState}`);
-    canOpenLink = appState === 'active';
-  };
-
-
-
-  const backgroundStyle = {
-    backgroundColor: Colors.lighter,
-  };
-
-  const handleConnect = async () => {
-    const ethereum = MMSDK.getProvider();
-    
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-
-    const provider = new ethers.providers.Web3Provider(ethereum);
-
-    // Get the balance of an account (by address or ENS name, if supported by network)
-    const balance = await provider.getBalance(ethereum.selectedAddress);
-    
-    // Often you need to format the output to something more user-friendly,
-    // such as in ether (instead of wei)
-    const balanceInETH = ethers.utils.formatEther(balance);
-   const message = "Por favor, assine esta mensagem.";
-  
-  // Converta a mensagem para um hex string
-  const messageHex = Buffer.from(message, 'utf8').toString('hex');
-  
-  // Prepare a requisição de assinatura
-  const signParameters = {
-    method: 'personal_sign',
-    params: [messageHex, ethereum.selectedAddress],
-    from: ethereum.selectedAddress,
-  };
-  
-  // Solicite a assinatura da mensagem
-  const signature = await ethereum.request(signParameters);
-  
-  // Agora você tem a assinatura da mensagem
-  console.log('Assinatura:', signature);}
-
-    return (
-    <View style={styles.container}>
-      
-      <Text style={styles.title}>Add wallet address</Text>
-      <Text style={styles.subtitle}>Please provide the details of your wallet address</Text>
-      
-<TouchableOpacity
-  style={styles.connectButton}
-  onPress={handleConnect}
->
-  <Text style={styles.buttonText}>CONNECT</Text>
-</TouchableOpacity>
-
-    </View>
+const HomeStack = () => {
+  return (
+    <HomeStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStackNavigator.Screen
+        name="Home"
+        component={Home}
+        options={({ navigation }) => ({ navigation })}
+      />
+      <HomeStackNavigator.Screen name="Profile" component={Profile} />
+      <HomeStackNavigator.Screen name="Limits" component={Limits} />
+      <HomeStackNavigator.Screen name="DelayedWithdrawals" component={DelayedWithdrawals} />
+      <HomeStackNavigator.Screen name="AddWallet" component={AddWallet} />
+    </HomeStackNavigator.Navigator>
   );
 };
-  
-  
+const App = () => {
+  return (
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'gray',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 24,
-    paddingLeft: 8,
-  },
-  connectButton: {
-    backgroundColor: '#008884',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 4,
-    marginTop: 16,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Main"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+
+  );
+};
+
+const MainTabs = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Home"
+        component={HomeStack}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Banks"
+        component={Banks}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Wallets"
+        component={Wallets}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Deposit"
+        component={Deposit}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Withdraw"
+        component={Withdraw}
+        options={{ headerShown: false }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export default App;

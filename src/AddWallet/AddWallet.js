@@ -97,13 +97,13 @@ function AddWallet() {
    const message = "Por favor, assine esta mensagem.";
   
   // Converta a mensagem para um hex string
-  const messageHex = Buffer.from(message, 'utf8').toString('hex');
+  const messageHex = `0x${Buffer.from(message, 'utf8').toString('hex')}`;;
   
   // Prepare a requisição de assinatura
   const signParameters = {
     method: 'personal_sign',
-    params: [messageHex, ethereum.selectedAddress],
-    from: ethereum.selectedAddress,
+    params: [messageHex, accounts[0]],
+  
   };
   
   // Solicite a assinatura da mensagem

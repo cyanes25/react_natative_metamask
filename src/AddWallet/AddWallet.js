@@ -107,7 +107,52 @@ function AddWallet() {
   const signature = await ethereum.request(signParameters);
   
   // Agora você tem a assinatura da mensagem
-  console.log('Assinatura:', signature);}
+  console.log('Assinatura:', signature);
+
+  const walletAddress = accounts[0]; // Endereço da carteira conectada
+            const chain = await web3.eth.getChainId(); // ID da rede conectada
+      
+            // Faça a requisição com as informações obtidas
+      
+            const getChainName = (chainId) => {
+              if ([1, 11155111].includes(chainId)) {
+                return 'Ethereum';
+              } else if ([137, 80001].includes(chainId)) {
+                return 'Polygon';
+              } else if ([66, 65].includes(chainId)) {
+                return 'OKC';
+              }
+              return 'Unknown';
+            };
+
+            
+      
+            const chainId = await web3.eth.getChainId(); // ID da rede conectada
+            const chainName = getChainName(chainId); // Nome da rede
+            console.log('Data:', data);
+      
+            const response = await fetch(`${ENDPOINT}/user/wallets`, {
+              method: 'POST',
+              credentials: 'include',
+              body: JSON.stringify({
+                walletAddress: walletAddress,
+                name: data.nickname,
+                chain: chainName,
+                signature: signature,
+                messageTime: Sigtime.toString(),
+              }),
+            });
+          
+            console.log('Fetch completed'); // Verifique se este log é exibido
+          
+            if (response.ok) {
+              console.log('Response OK');
+              alert.success('Wallet successfully added to your account.');
+              setTimeout(() => {
+                navigate('/Home');
+              }, 5000);
+            }
+          };
 
     return (
     <View style={styles.container}>

@@ -93,7 +93,6 @@ function AddWallet() {
     
     // Often you need to format the output to something more user-friendly,
     // such as in ether (instead of wei)
-    const balanceInETH = ethers.utils.formatEther(balance);
    const message = "Por favor, assine esta mensagem.";
   
   // Converta a mensagem para um hex string

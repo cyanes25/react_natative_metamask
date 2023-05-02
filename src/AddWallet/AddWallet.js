@@ -158,7 +158,7 @@ function AddWallet() {
 
             
       
-            const chainId = await web3.eth.getChainId(); // ID da rede conectada
+            const chainId = await ethereum.getChainId();
             const chainName = getChainName(chainId); // Nome da rede
             console.log('Data:', data);
             const response = await fetch(`${ENDPOINT}/user/wallets`, {
@@ -166,7 +166,7 @@ function AddWallet() {
               credentials: 'include',
               body: JSON.stringify({
                 walletAddress: walletAddress,
-                name: data.nickname,
+                name: walletNickname,
                 chain: chainName,
                 signature: signature,
                 messageTime: Sigtime.toString(),

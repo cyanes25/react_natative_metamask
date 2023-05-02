@@ -35,6 +35,7 @@ import {LogBox, TextInput, Image, Platform} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import { ENDPOINT} from '../variaveis';
+import {useNavigation} from '@react-navigation/native';
 
 
 // TODO how to properly make sure we only try to open link when the app is active?
@@ -62,6 +63,8 @@ const MMSDK = new MetaMaskSDK({
 function AddWallet() {
   const [walletNickname, setWalletNickname] = useState('');
   const isDarkMode = useColorScheme() === 'dark';
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', handleAppState);
@@ -114,7 +117,7 @@ function AddWallet() {
     const ethereum = MMSDK.getProvider();
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-
+    const Sigtime = Date.now();
     
     // Get the balance of an account (by address or ENS name, if supported by network)
     
@@ -122,7 +125,7 @@ function AddWallet() {
     // such as in ether (instead of wei)
     const msgToSign = `I, ${users.firstName} ${users.lastName}, document ${users.kycInfo.documentData}, confirm that I am the owner of this address. Current time: ${Sigtime}`;
 
-   const Sigtime = Date.now();
+  
   
   // Converta a mensagem para um hex string
   const messageHex = `0x${Buffer.from(msgToSign, 'utf8').toString('hex')}`;
@@ -141,7 +144,6 @@ function AddWallet() {
   console.log('Assinatura:', signature);
 
   const walletAddress = accounts[0]; // Endereço da carteira conectada
-            const chain = await ethereum.getChainId(); // ID da rede conectada
       
             // Faça a requisição com as informações obtidas
       
@@ -158,9 +160,9 @@ function AddWallet() {
 
             
       
-            const chainId = await ethereum.getChainId();
+            const chainId = await ethereum.request({ method: 'eth_chainId' });
             const chainName = getChainName(chainId); // Nome da rede
-            console.log('Data:', data);
+            console.log('Sending request to:', `${ENDPOINT}/user/wallets`);
             const response = await fetch(`${ENDPOINT}/user/wallets`, {
               method: 'POST',
               credentials: 'include',
@@ -172,14 +174,15 @@ function AddWallet() {
                 messageTime: Sigtime.toString(),
               }),
             });
-          
-            console.log('Fetch completed'); // Verifique se este log é exibido
+            console.log('Fetch completed');
+            
+      
           
             if (response.ok) {
               console.log('Response OK');
               alert('Wallet successfully added to your account.');
               setTimeout(() => {
-                navigate('/Home');
+                navigation.navigate('Home');;
               }, 5000);
             }
           };

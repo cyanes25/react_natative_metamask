@@ -161,6 +161,7 @@ function AddWallet() {
             
       
             const chainId = await ethereum.request({ method: 'eth_chainId' });
+            console.log("ChainID", chainId)
             const chainName = getChainName(chainId); // Nome da rede
             console.log('Sending request to:', `${ENDPOINT}/user/wallets`);
             const response = await fetch(`${ENDPOINT}/user/wallets`, {
@@ -169,7 +170,7 @@ function AddWallet() {
               body: JSON.stringify({
                 walletAddress: walletAddress,
                 name: walletNickname,
-                chain: chainName,
+                chain: chainId,
                 signature: signature,
                 messageTime: Sigtime.toString(),
               }),

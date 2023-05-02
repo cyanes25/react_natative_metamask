@@ -88,7 +88,6 @@ function AddWallet() {
 
     
     // Get the balance of an account (by address or ENS name, if supported by network)
-    const balance = await provider.getBalance(ethereum.selectedAddress);
     
     // Often you need to format the output to something more user-friendly,
     // such as in ether (instead of wei)

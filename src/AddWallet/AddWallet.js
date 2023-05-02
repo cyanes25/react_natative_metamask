@@ -86,8 +86,7 @@ function AddWallet() {
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 
-    const provider = new ethers.providers.Web3Provider(ethereum);
-
+    
     // Get the balance of an account (by address or ENS name, if supported by network)
     const balance = await provider.getBalance(ethereum.selectedAddress);
     

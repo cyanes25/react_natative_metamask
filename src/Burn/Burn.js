@@ -143,7 +143,7 @@ function Burn() {
         return;
       }
   
-      const BRLAContract = new ethers.Contract(BRLAContractAddress, BRLA_ABI, new ethers.providers.Web3Provider(ethereum));
+      const BRLAContract = new ethers.Contract(BRLAContractAddress, BRLAContractAbi, new ethers.providers.Web3Provider(ethereum));
       const balance = await BRLAContract.balanceOf(account);
       const formattedBalance = parseFloat(ethers.utils.formatUnits(balance, 18));
   

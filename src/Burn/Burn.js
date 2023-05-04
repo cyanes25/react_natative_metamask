@@ -133,25 +133,7 @@ function Burn() {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const Sigtime = Date.now();
   
-    // Adicione esta função para obter o saldo BRLA
-    const getBRLABalance = async (account) => {
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      const BRLAContractAddress = BRLA_CONTRACT_ADDRESSES[parseInt(chainId)];
   
-      if (!BRLAContractAddress) {
-        alert('Unsupported network');
-        return;
-      }
-  
-      const BRLAContract = new ethers.Contract(BRLAContractAddress, BRLAContractAbi, new ethers.providers.Web3Provider(ethereum));
-      const balance = await BRLAContract.balanceOf(account);
-      const formattedBalance = parseFloat(ethers.utils.formatUnits(balance, 18));
-  
-      setAvailableBRLA(formattedBalance);
-    };
-  
-    // Chame a função getBRLABalance com o endereço da carteira conectada
-    await getBRLABalance(accounts[0]);
   
     // ... Restante do código da função handleConnect
   };

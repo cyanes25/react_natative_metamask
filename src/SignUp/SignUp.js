@@ -6,9 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  SafeAreaView
 } from 'react-native';
 import { useForm } from 'react-hook-form';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import zxcvbn from 'zxcvbn';
 import { ENDPOINT} from '../variaveis';
 import { useNavigation } from '@react-navigation/native';

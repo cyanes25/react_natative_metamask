@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Image
+  Image,
+  SafeAreaView
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
@@ -45,6 +46,7 @@ const ForgotPassword = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.backButtonText}>Back</Text>
@@ -72,6 +74,7 @@ const ForgotPassword = () => {
         )}
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 };
 

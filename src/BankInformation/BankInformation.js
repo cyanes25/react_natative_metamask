@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 import { ENDPOINT} from '../variaveis';
 
@@ -83,7 +84,8 @@ const BankInformation = ({ route }) => {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}> 
+       <View style={styles.container}>
     <Text style={styles.title}>Account Bank Information</Text>
     <Image source={bank.logo} style={styles.bankLogo} />
     <TextInput
@@ -102,6 +104,8 @@ const BankInformation = ({ route }) => {
       <Text style={styles.buttonText}>Save</Text>
     </TouchableOpacity>
   </View>
+  </SafeAreaView>
+
   );
 };
 

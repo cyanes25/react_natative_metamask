@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions, Image , ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions, Image , ScrollView, SafeAreaView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ENDPOINT } from '../variaveis';
 
@@ -88,6 +88,7 @@ const Wallets = () => {
 
     
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <ScrollView vertical>
     <View style={styles.container}>
       <View style={styles.header}>
@@ -120,6 +121,7 @@ const Wallets = () => {
     
     </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -270,6 +270,7 @@ function Burn() {
   }, []);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       {hasBankAccount ? (
         <>
@@ -348,6 +349,7 @@ function Burn() {
         </View>
       </Modal>
     </View>
+    </SafeAreaView>
   );
 }
 

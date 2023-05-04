@@ -154,6 +154,7 @@ const Mint = () => {
   
   
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <Text style={styles.walletLabel}>Select your Wallet</Text>
       <Picker
@@ -224,6 +225,7 @@ const Mint = () => {
     </Modal>
   
     </View>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

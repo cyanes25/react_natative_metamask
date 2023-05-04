@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, SafeAreaView  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { ENDPOINT } from '../variaveis';
@@ -65,6 +65,7 @@ const Banks = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <ScrollView vertical>
     <View style={styles.container}>
       <View style={styles.header}>
@@ -96,6 +97,7 @@ const Banks = () => {
       </View>
     </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

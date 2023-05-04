@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  SafeAreaView
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -39,6 +40,7 @@ const BanksScreen = () => {
   );
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <Text style={styles.title}>Banks</Text>
       <FlatList
@@ -49,6 +51,7 @@ const BanksScreen = () => {
         columnWrapperStyle={styles.bankRow}
       />
     </View>
+    </SafeAreaView>
   );
 };
 

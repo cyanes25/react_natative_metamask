@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 const { width } = Dimensions.get('window');
 
@@ -45,6 +45,7 @@ const Limits = () => {
     };
     
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <View style={styles.header}>
      
@@ -89,6 +90,7 @@ const Limits = () => {
 
       </View>
     </View>
+    </SafeAreaView>
   );
 };
 

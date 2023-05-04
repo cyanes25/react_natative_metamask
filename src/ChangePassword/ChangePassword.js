@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Image
+  Image,
+  SafeAreaView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
@@ -55,6 +56,7 @@ const ChangePassword = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Change password</Text>
       <Text style={styles.subtitle}>
@@ -135,6 +137,7 @@ const ChangePassword = () => {
        </View>
      </View>
    </ScrollView>
+   </SafeAreaView>
      );
    };
    

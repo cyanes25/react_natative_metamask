@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ENDPOINT} from '../variaveis';
+import Toast from 'react-native-toast-message';
 const { width } = Dimensions.get('window');
 
 const Profile = () => {
@@ -50,6 +51,7 @@ const Profile = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <View style={styles.header}>
      
@@ -80,6 +82,7 @@ const Profile = () => {
       </View>
     
     </View>
+    </SafeAreaView>
   );
 };
 

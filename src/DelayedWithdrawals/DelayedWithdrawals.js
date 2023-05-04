@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, Switch  } from 'react-native'; // Adicionei ScrollView aqui
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, Switch, SafeAreaView  } from 'react-native'; // Adicionei ScrollView aqui
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { IconButton, Drawer } from 'react-native-paper';
@@ -51,6 +51,7 @@ const toggleSwitch = () => {
     };
     
   return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       <View style={styles.header}>
      
@@ -88,6 +89,7 @@ const toggleSwitch = () => {
       </View>
     
     </View>
+    </SafeAreaView>
   );
 };
 

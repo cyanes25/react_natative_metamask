@@ -11,7 +11,6 @@ import {
   AppStateStatus,
   Button,
   Linking,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -31,7 +30,7 @@ import {
 } from '@metamask/sdk-communication-layer';
 import crypto from 'crypto';
 import {encrypt} from 'eciesjs';
-import {LogBox, TextInput, Image, Platform} from 'react-native';
+import {LogBox, TextInput, Image, Platform, SafeAreaView} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import { ENDPOINT} from '../variaveis';
@@ -191,6 +190,7 @@ function AddWallet() {
           };
 
     return (
+      <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <Image source={require('./logo_corpo.png')} style={styles.logo} />
       <Text style={styles.title}>Add wallet address</Text>
@@ -211,6 +211,7 @@ function AddWallet() {
 </TouchableOpacity>
 
     </View>
+    </SafeAreaView>
   );
 };
   

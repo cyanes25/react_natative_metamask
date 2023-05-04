@@ -132,6 +132,12 @@ function Burn() {
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const Sigtime = Date.now();
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const walletAddress = accounts[0];
+    const balance = await provider.getBalance(ethereum.walletAddress);
+    console.log("Address : ", ethereum.walletAddress )
+    console.log("Address 2: ", walletAddress )
+    console.log("Balance", balance )
   
   
   

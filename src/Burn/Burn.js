@@ -131,10 +131,11 @@ function Burn() {
     const ethereum = MMSDK.getProvider();
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const walletAddress = accounts[0];
     const Sigtime = Date.now();
     const provider = new ethers.providers.Web3Provider(ethereum);
-    const walletAddress = accounts[0];
-    const balance = await provider.getBalance(ethereum.walletAddress);
+
+    const balance = await provider.getBalance(walletAddress);
     console.log("Address : ", ethereum.walletAddress )
     console.log("Address 2: ", walletAddress )
     console.log("Balance", balance )

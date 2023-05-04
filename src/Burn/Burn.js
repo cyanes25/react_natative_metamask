@@ -103,7 +103,7 @@ function Burn() {
   const [selectedBank, setSelectedBank] = useState(null);
   const [hasBankAccount, setHasBankAccount] = useState(false);
   const [burnValue, setBurnValue] = useState('');
-  const [availableBRLA, setAvailableBRLA] = useState(0);
+  const [availableBRLA, setAvailableBRLA] = useState(-1);
   const [modalVisible, setModalVisible] = useState(false);
 
   const [users, setUsers] = useState([]);
@@ -292,33 +292,34 @@ function Burn() {
           Important: Always double-check that the CPF registered with your bank account matches the one registered with your BRLA Account to avoid issues with your transaction. Remember that the processing time may vary depending on factors such as network traffic and banking hours.
         </Text>
       </View>
-      {!isWalletConnected ? (
-      <TouchableOpacity style={styles.connectButton} onPress={handleConnect}>
-        <Text style={styles.buttonText}>CONNECT WALLET</Text>
-      </TouchableOpacity>
-    ) : (
-      <>
-        <TextInput
-          style={styles.amountInput}
-          placeholder="Amount"
-          value={burnValue}
-          onChangeText={(value) => setBurnValue(value)}
-          keyboardType="numeric"
-        />
-        <Text style={styles.availableText}>
-          Available: {availableBRLA}{' '}
-          <Text style={styles.maxText} onPress={handleMaxValue}>
-            max
-          </Text>
-        </Text>
-        <TouchableOpacity
-          style={styles.burnButton}
-          onPress={handleBurn}
-          disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
-          <Text style={styles.buttonText}>BURN</Text>
-        </TouchableOpacity>
-      </>
-    )}
+      {availableBRLA === -1 ? (
+  <TouchableOpacity style={styles.connectButton} onPress={handleConnect}>
+    <Text style={styles.buttonText}>CONNECT WALLET</Text>
+  </TouchableOpacity>
+) : (
+  <>
+    <TextInput
+      style={styles.amountInput}
+      placeholder="Amount"
+      value={burnValue}
+      onChangeText={(value) => setBurnValue(value)}
+      keyboardType="numeric"
+    />
+    <Text style={styles.availableText}>
+      Available: {availableBRLA}{' '}
+      <Text style={styles.maxText} onPress={handleMaxValue}>
+        max
+      </Text>
+    </Text>
+    <TouchableOpacity
+      style={styles.burnButton}
+      onPress={handleBurn}
+      disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
+      <Text style={styles.buttonText}>BURN</Text>
+    </TouchableOpacity>
+  </>
+)}
+
       
       <Modal
         animationType="slide"

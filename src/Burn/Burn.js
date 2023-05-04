@@ -4,7 +4,7 @@
  *
  * @format
  */
-
+import {MetaMaskInpageProvider} from '@metamask/providers';
 import React, {useEffect, useState} from 'react';
 import {
   AppState,
@@ -133,11 +133,13 @@ function Burn() {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddress = accounts[0];
     const Sigtime = Date.now();
-    const provider = new ethers.providers.Web3Provider(ethereum);
+    const inpageProvider = new MetaMaskInpageProvider(ethereum);
+    const provider = new ethers.providers.Web3Provider(inpageProvider);
+    const balance = await provider.getBalance(walletAddress);
 
   
   
-    // ... Restante do código da função handleConnect
+    
   };
   
   const handleBankSelection = (bank) => {

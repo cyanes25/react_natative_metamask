@@ -33,9 +33,11 @@ import {encrypt} from 'eciesjs';
 import {LogBox, TextInput, Image, Platform, SafeAreaView} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import { ENDPOINT} from '../variaveis';
 import {useNavigation} from '@react-navigation/native';
-
+import { ENDPOINT, BRLA_CONTRACT_ADDRESSES} from '../variaveis';
+import { BRLAContractAbi } from '../abis';
+import { ethers } from 'ethers';
+import {Picker} from '@react-native-picker/picker'
 
 // TODO how to properly make sure we only try to open link when the app is active?
 // current problem is that sdk declaration is outside of the react scope so I cannot directly verify the state

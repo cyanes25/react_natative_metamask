@@ -4,20 +4,23 @@
  *
  * @format
  */
-
+import {MetaMaskInpageProvider} from '@metamask/providers';
 import React, {useEffect, useState} from 'react';
 import {
   AppState,
   AppStateStatus,
   Button,
   Linking,
+  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   useColorScheme,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert,
+  Modal
 } from 'react-native';
 
 import {MetaMaskSDK} from '@metamask/sdk';
@@ -30,11 +33,11 @@ import {
 } from '@metamask/sdk-communication-layer';
 import crypto from 'crypto';
 import {encrypt} from 'eciesjs';
-import {LogBox, TextInput, Image, Platform, SafeAreaView} from 'react-native';
+import {LogBox, TextInput, Image, Platform} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { ENDPOINT} from '../variaveis';
 import {useNavigation} from '@react-navigation/native';
-import { ENDPOINT, BRLA_CONTRACT_ADDRESSES} from '../variaveis';
 import { BRLAContractAbi } from '../abis';
 import { ethers } from 'ethers';
 import {Picker} from '@react-native-picker/picker'
@@ -62,7 +65,15 @@ const MMSDK = new MetaMaskSDK({
 });
 
 function Burn() {
-  const [walletNickname, setWalletNickname] = useState('');
+  const infuraProjectId = 'brla_mobile';
+  const network = 'polygon-mumbai'; // Substitua 'mainnet' pela rede Polygon Mumbai
+  const polygonRpcUrl = 'https://rpc-mumbai.maticvigil.com'; // URL do RPC para a rede Polygon Mumbai
+  
+  const infuraUrl = `https://${network}.infura.io/v3/${infuraProjectId}`;
+
+  const provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
 
@@ -86,184 +97,368 @@ function Burn() {
     backgroundColor: Colors.lighter,
   };
 
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    const fetchUser = async () => {
+  const [banks, setBanks] = useState([]);
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [hasBankAccount, setHasBankAccount] = useState(false);
+  const [burnValue, setBurnValue] = useState('');
+  const [availableBRLA, setAvailableBRLA] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
-      const resHistory = await fetch(`${ENDPOINT}/user/info`, {
+  const [users, setUsers] = useState([]);
+  
+  useEffect(() => {
+    const fetchBanks = async () => {
+      const resHistory = await fetch(`${ENDPOINT}/user/accounts`, {
         method: 'GET',
         credentials: 'include',
       });
 
       if (resHistory.status === 401) {
-        navigate('/login');
+        navigation.navigate('Login');
         return;
       }
 
       if (resHistory.status === 200) {
         const bodyJson = await resHistory.json();
-        const UserData = bodyJson || [];
-        setUsers(UserData);
-        console.log(UserData)
+        const BanksData = bodyJson['accounts'] || [];
+        setBanks(BanksData);
+        console.log(banks);
+        setHasBankAccount(BanksData.length > 0);
       }
-
     };
 
-    fetchUser();
+    fetchBanks();
   }, []);
-  
-  
 
+  // ... Add other useEffect hooks
+
+  const handleAddBankAccount = () => {
+    navigation.navigate('ChooseBank');
+  };
   const handleConnect = async () => {
     const ethereum = MMSDK.getProvider();
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    const Sigtime = Date.now();
+    const walletAddress = accounts[0];
+    const provider = new ethers.providers.JsonRpcProvider(polygonRpcUrl);
+    const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
+  
+    // 2. Use a função `balanceOf` para obter o saldo do usuário
+    const balance = await BRLAContract.balanceOf(walletAddress);
+    setAvailableBRLA(ethers.utils.formatUnits(balance, 18));
+  
+  
     
-    // Get the balance of an account (by address or ENS name, if supported by network)
-    
-    // Often you need to format the output to something more user-friendly,
-    // such as in ether (instead of wei)
-    const msgToSign = `I, ${users.firstName} ${users.lastName}, document ${users.kycInfo.documentData}, confirm that I am the owner of this address. Current time: ${Sigtime}`;
-
-  
-  
-  // Converta a mensagem para um hex string
-  const messageHex = `0x${Buffer.from(msgToSign, 'utf8').toString('hex')}`;
-  
-  // Prepare a requisição de assinatura
-  const signParameters = {
-    method: 'personal_sign',
-    params: [messageHex, accounts[0]],
-  
   };
   
-  // Solicite a assinatura da mensagem
-  const signature = await ethereum.request(signParameters);
+  const handleBankSelection = (bank) => {
+    setSelectedBank(bank);
+  };
+
+  const handleMaxValue = () => {
+    setBurnValue(availableBRLA);
+  };
+
+  const handleBurn = () => {
+    setModalVisible(true);
+  };
+
+  const handleConfirm = async () => {
+    const ethereum = MMSDK.getProvider();
+
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const fromAddress = accounts[0];
   
-  // Agora você tem a assinatura da mensagem
-  console.log('Assinatura:', signature);
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESS, BRLAContractAbi, provider);
+  
+    const SECOND = 1000;
+    const expiry = Math.trunc((Date.now() + 60 * 60 * SECOND) / SECOND);
+    const nonce = await BRLAContract.nonces(fromAddress).call();
+    const value = (BigInt(burnValue * 100) * BigInt(10 ** 16)).toString();
+    const spender = await BRLAContract.operatorWallet().call();
+  
+    const domain = {
+      chainId: chainId,
+      name: 'BRLA Token',
+      verifyingContract: BRLA_CONTRACT_ADDRESS,
+      version: '1',
+    };
+  
+    const message = {
+      owner: fromAddress,
+      spender,
+      value,
+      nonce,
+      deadline: expiry,
+    };
+  
+    const types = {
+      EIP712Domain: [
+        { name: 'name', type: 'string' },
+        { name: 'version', type: 'string' },
+        { name: 'chainId', type: 'uint256' },
+        { name: 'verifyingContract', type: 'address' },
+      ],
+      Permit: [
+        { name: 'owner', type: 'address' },
+        { name: 'spender', type: 'address' },
+        { name: 'value', type: 'uint256' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' },
+      ],
+    };
+  
+    const signer = provider.getSigner();
+    const sig = await signer._signTypedData(domain, types, message);
+  
+    try {
+      const response = await fetch(`${ENDPOINT}/sell`, {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({
+          accountId: selectedBankData.id,
+          walletId: internalWalletId,
+          amount: burnValue * 100,
+          permit: {
+            deadline: sig.deadline,
+            r: sig.r,
+            s: sig.s,
+            v: sig.v,
+            nonce: parseInt(sig.nonce),
+          },
+        }),
+      });
+  
+      if (response.ok) {
+        alert.success('Request successfully made. Please wait up to 1 minute for the Burn to be processed.');
+        setShowPopup(false);
+      } else {
+        alert.error('Error in server response:', response.status, response.statusText);
+        const errorData = await response.json();
+        alert.error(`Error: ${errorData.message || 'An unknown error occurred.'}`);
+      }
+    } catch (error) {
+      alert.error('Error making request:', error);
+      alert.error(`Error making request: ${error.message || 'An unknown error occurred.'}`);
+    }
+  };
+  
+  
+  
+  
+  
 
-  const walletAddress = accounts[0]; // Endereço da carteira conectada
-      
-            // Faça a requisição com as informações obtidas
-      
-            const getChainName = (chainId) => {
-              if ([1, 11155111].includes(chainId)) {
-                return 'Ethereum';
-              } else if ([137, 80001].includes(chainId)) {
-                return 'Polygon';
-              } else if ([66, 65].includes(chainId)) {
-                return 'OKC';
-              }
-              return 'Unknown';
-            };
 
-            
-      
-            const chainId = await ethereum.request({ method: 'eth_chainId' });
-            const chainIdHex = "0x1";
-            const chainIdDecimal = parseInt(chainIdHex, 16);
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      const ethereum = MMSDK.getProvider();
+      try {
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        setIsWalletConnected(accounts.length > 0);
+      } catch (error) {
+        setIsWalletConnected(false);
+      }
+    };
 
-            const chainName = getChainName(chainIdDecimal); // Nome da rede
-            console.log('Sending request to:', `${ENDPOINT}/user/wallets`);
-            const response = await fetch(`${ENDPOINT}/user/wallets`, {
-              method: 'POST',
-              credentials: 'include',
-              body: JSON.stringify({
-                walletAddress: walletAddress,
-                name: walletNickname,
-                chain: chainName,
-                signature: signature,
-                messageTime: Sigtime.toString(),
-              }),
-            });
-            console.log('Fetch completed');
-            
-      
-          
-            if (response.ok) {
-              console.log('Response OK');
-              alert('Wallet successfully added to your account.');
-              setTimeout(() => {
-                navigation.navigate('Home');;
-              }, 5000);
-            }
-          };
+    checkWalletConnection();
+  }, []);
 
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
+  return (
+    <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
-      <Image source={require('./logo_corpo.png')} style={styles.logo} />
-      <Text style={styles.title}>Add wallet address</Text>
-      <Text style={styles.subtitle}>Please provide the details of your wallet address</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Wallet nickname"
-        onChangeText={setWalletNickname}
-        value={walletNickname}
-      />
-     
+      {hasBankAccount ? (
+        <>
+          <Text style={styles.title}>Select a bank account</Text>
+          <Picker
+            selectedValue={selectedBank}
+            style={styles.bankPicker}
+            onValueChange={(itemValue, itemIndex) => handleBankSelection(itemValue)}>
+            {banks.map((bank, index) => (
+              <Picker.Item key={index} label={bank.accountNickname} value={bank} />
+            ))}
+          </Picker>
+        </>
+      ) : (
+        <TouchableOpacity style={styles.addButton} onPress={handleAddBankAccount}>
+          <Text style={styles.buttonText}>ADD BANK ACCOUNT</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.warningBox}>
+        <Text style={styles.warningText}>
+          Important: Always double-check that the CPF registered with your bank account matches the one registered with your BRLA Account to avoid issues with your transaction. Remember that the processing time may vary depending on factors such as network traffic and banking hours.
+        </Text>
+      </View>
+      {!isWalletConnected ? (
+      <TouchableOpacity style={styles.connectButton} onPress={handleConnect}>
+        <Text style={styles.buttonText}>CONNECT WALLET</Text>
+      </TouchableOpacity>
+    ) : (
+      <>
+        <TextInput
+          style={styles.amountInput}
+          placeholder="Amount"
+          value={burnValue}
+          onChangeText={(value) => setBurnValue(value)}
+          keyboardType="numeric"
+        />
+        <Text style={styles.availableText}>
+          Available: {availableBRLA}{' '}
+          <Text style={styles.maxText} onPress={handleMaxValue}>
+            max
+          </Text>
+        </Text>
+        <TouchableOpacity
+          style={styles.burnButton}
+          onPress={handleBurn}
+          disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
+          <Text style={styles.buttonText}>BURN</Text>
+        </TouchableOpacity>
+      </>
+    )}
       
-<TouchableOpacity
-  style={styles.connectButton}
-  onPress={handleConnect}
->
-  <Text style={styles.buttonText}>CONNECT</Text>
-</TouchableOpacity>
-
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>Confirm Burn</Text>
+          <Text style={styles.modalText}>
+            Are you sure you want to burn {burnValue} BRLA and send it to the selected bank account?
+          </Text>
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalConfirmButton]}
+              onPress={handleConfirm}>
+              <Text style={styles.modalButtonText}>Confirm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalCancelButton]}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
     </SafeAreaView>
   );
-};
-  
-  
-
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain',
+    paddingHorizontal: 16,
+    paddingTop: 24,
   },
   title: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: 'black',
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'gray',
-    marginTop: 8,
     textAlign: 'center',
+    marginBottom: 16,
   },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 4,
-    marginTop: 24,
-    paddingLeft: 8,
+  bankPicker: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  warningBox: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 8,
+  },
+  warningText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  amountInput: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  availableText: {
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  maxText: {
+    color: '#00dc84',
+  },
+  addButton: {
+    backgroundColor: '#008884',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   connectButton: {
     backgroundColor: '#008884',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 4,
-    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  burnButton: {
+    backgroundColor: '#008884',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 24,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
+    textAlign: 'center',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: '50%',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  modalButton: {
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  modalConfirmButton: {
+    backgroundColor: '#008884',
+  },
+  modalCancelButton: {
+    backgroundColor: '#ccc',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
+
 
 export default Burn;

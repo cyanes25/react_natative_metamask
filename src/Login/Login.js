@@ -68,7 +68,7 @@ const Login = () => {
   return (
     <SafeAreaView style={styles.container}>
         <Image source={Logo} style={styles.logo} /> 
-      <Text style={styles.title}>Login3</Text>
+      <Text style={styles.title}>Login5</Text>
       {showError && (
         <Text style={styles.errorText}>Wrong Credentials.</Text>
       )}

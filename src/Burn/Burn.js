@@ -39,6 +39,8 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import { ENDPOINT} from '../variaveis';
 import {useNavigation} from '@react-navigation/native';
 import { BRLAContractAbi } from '../abis';
+import "react-native-get-random-values";
+import "@ethersproject/shims";
 import { ethers } from 'ethers';
 import {Picker} from '@react-native-picker/picker'
 
@@ -141,6 +143,7 @@ function Burn() {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddress = accounts[0];
     const provider = new ethers.providers.JsonRpcProvider(polygonRpcUrl);
+    BRLA_CONTRACT_ADDRESSES='0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
   
     // 2. Use a função `balanceOf` para obter o saldo do usuário

@@ -68,7 +68,8 @@ function Burn() {
   const infuraProjectId = 'brla_mobile';
   const network = 'polygon-mumbai'; // Substitua 'mainnet' pela rede Polygon Mumbai
   const polygonRpcUrl = 'https://rpc-mumbai.maticvigil.com'; // URL do RPC para a rede Polygon Mumbai
-  
+  const infuraUrl = `https://${network}.infura.io/v3/${infuraProjectId}`;
+
   
 
   const provider = new ethers.providers.JsonRpcProvider(infuraUrl);

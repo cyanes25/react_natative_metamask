@@ -6,12 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Image
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ENDPOINT} from '../variaveis';
-
+import Logo from './logo.png';
 
 const Login = () => {
     const {
@@ -66,7 +67,8 @@ const Login = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Login14</Text>
+        <Image source={Logo} style={styles.logo} /> 
+      <Text style={styles.title}>Login</Text>
       {showError && (
         <Text style={styles.errorText}>Wrong Credentials.</Text>
       )}
@@ -86,13 +88,26 @@ const Login = () => {
         textContentType="password"
         onChangeText={(text) => setValue('password', text)}
       />
-     <TouchableOpacity
- style={styles.button}
- onPress={handleLoginPress}
-  
->
+    <TouchableOpacity
+        style={styles.button}
+        onPress={handleLoginPress}
+      >
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
+      <View style={styles.linkContainer}>
+        <Text
+          style={styles.linkText}
+          onPress={() => navigation.navigate('SignUp')}
+        >
+          Sign up
+        </Text>
+        <Text
+          style={styles.linkText}
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >
+          Forgot password
+        </Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -135,6 +150,22 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginBottom: 16,
+  },
+  logo: {
+    width: 300,
+    height: 100,
+    resizeMode: 'contain',
+    marginBottom: 0,
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: 16,
+    color:'#00dc84'
+  },
+  linkText: {
+    color: '#00dc84', // Mova a cor para o estilo 'linkText'
   },
 });
 

@@ -1,50 +1,100 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions  } from 'react-native'; // Adicionei ScrollView aqui
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions, Image , ScrollView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { ENDPOINT } from '../variaveis';
+
 const { width } = Dimensions.get('window');
 
-
 const Wallets = () => {
-  const data = [
-    {
-      id: 1,
-      WalletAddress: '0x...',
-      Blockchain: 'Ethereum',
-      nickname: 'Teste',
-      
-    },
-    {
-      id: 2,
-      WalletAddress: '0x...',
-      Blockchain: 'Ethereum',
-      nickname: 'Teste',
-      
-    },
-  
-  
-  ];
+  const navigation = useNavigation();
+  const [wallets, setWallets] = useState([]);
 
+  useEffect(() => {
+    const fetchWallets = async () => {
+      const resHistory = await fetch(`${ENDPOINT}/user/wallets`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
-    const TransactionCard = ({ item }) => {
-      return (
-        <View style={styles.card}>
-          
-          <Text style={styles.cardText}>ID: {item.id}</Text>
-          <Text style={styles.cardText}>Wallet Address: {item.WalletAddress}</Text>
-          <Text style={styles.cardText}>Blockchain: {item.Blockchain}</Text>
-          <Text style={styles.cardText}>Nickname: {item.nickname}</Text>
-          
-        </View>
-      );
+      if (resHistory.status === 401) {
+        navigation.navigate('Login');
+        return;
+      }
+
+      if (resHistory.status === 200) {
+        const bodyJson = await resHistory.json();
+        const WalletsData = bodyJson['wallets'] || [];
+        setWallets(WalletsData);
+      }
     };
+
+    fetchWallets();
+  }, []);
+
+
+  const formatWalletAddress = (address) => {
+    const firstChars = address.slice(0, 3);
+    const lastChars = address.slice(-3);
+    return `${firstChars}...${lastChars}`;
+  };
+  const formatId = (id) => {
+    const firstChars = id.slice(0, 3);
+    const lastChars = id.slice(-3);
+    return `${firstChars}...${lastChars}`;
+  };
+
+  const EmptyWalletCard = () => {
+    return (
+     
+      <View style={styles.card}>
+        <Image
+          style={styles.emptyImage}
+          source={require('./blockchain.png')} // Substitua pelo caminho da imagem que deseja exibir
+        />
+        <Text style={styles.cardTextEmpty}>No Wallets</Text>
+      </View>
+    );
+  };
+  
+  
+  const WalletCard = ({ item }) => {
+    return (
+      <View style={styles.card}>
+          <View style={styles.idContainer}>
+  <Text style={styles.cardText}>ID: {formatId(item.id)}</Text>
+          <TouchableOpacity onPress={() => alert(item.id)}>
+          <Text style={styles.showLink}>Mostrar</Text>
+          </TouchableOpacity>
+          </View>
+        <View style={styles.walletAddressContainer}>
+          <Text style={styles.cardText}>
+            Wallet Address: {formatWalletAddress(item.walletAddress)}
+          </Text>
+          <TouchableOpacity onPress={() => alert(item.walletAddress)}>
+            <Text style={styles.showLink}>Mostrar</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.cardText}>Blockchain: {item.chain}</Text>
+        <Text style={styles.cardText}>Nickname: {item.name}</Text>
+      </View>
+    );
+  };
+
+  const handleAddClick = () => {
+    navigation.navigate("AddWallet");
+  };
+
+
+
     
   return (
+    <ScrollView vertical>
     <View style={styles.container}>
       <View style={styles.header}>
      
         <Text style={styles.title}>Address book</Text>  
-          <TouchableOpacity style={styles.depositButton}>
-            <Text style={styles.buttonText}>ADD ADDRESS</Text>
+          <TouchableOpacity style={styles.depositButton} onPress={handleAddClick}>
+            <Text style={styles.buttonText}>ADD WALLET</Text>
           </TouchableOpacity>
         
       </View>
@@ -58,19 +108,18 @@ const Wallets = () => {
      
       
       <View style={styles.transactions}>
-        <Text style={styles.transactionsTitle}>Wallets</Text>
-        <FlatList
-          horizontal
-          data={data}
-          renderItem={({ item }) => <TransactionCard item={item} />}
-          keyExtractor={(item) => item.id.toString()}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={width}
-          decelerationRate="fast"
-        />
-      </View>
+      <Text style={styles.transactionsTitle}>Wallets</Text>
+      <FlatList
+  data={wallets}
+  renderItem={({ item }) => <WalletCard item={item} />}
+  keyExtractor={(item) => item.id.toString()}
+  ListEmptyComponent={EmptyWalletCard} // Adicione esta linha
+/>
+
+    </View>
     
     </View>
+    </ScrollView>
   );
 };
 
@@ -209,6 +258,33 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  walletAddressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  showLink: {
+    color: '#00dc84',
+    marginLeft: 8,
+  },
+
+  idContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  emptyImage: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+
+  
+  cardTextEmpty: {
+    fontSize: 14,
+    marginBottom: 4,
+    alignSelf: 'center', // Adicione esta linha
+  },
+  
 
 });
 

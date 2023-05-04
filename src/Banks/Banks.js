@@ -1,85 +1,103 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions  } from 'react-native'; // Adicionei ScrollView aqui
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import { ENDPOINT } from '../variaveis';
+import emptyImage from './transaction.png'; // Substitua pelo caminho da imagem que deseja usar
+
 const { width } = Dimensions.get('window');
 
-
 const Banks = () => {
-  const data = [
-    {
-      id: 1,
-      nickname: 'Teste',
-      BankCodeTed: '000000',
-      BankCodePIX: '000000',
-      BranchCode: '2977',
-      AccountNumber: '20790-7',
-      PIXKey: '04976780392',
-    },
-    {
-      id: 2,
-      nickname: 'Teste',
-      BankCodeTed: '000000',
-      BankCodePIX: '000000',
-      BranchCode: '2977',
-      AccountNumber: '20790-7',
-      PIXKey: '04976780392',
-    },
-  
-  
-  ];
+  const [banks, setBanks] = useState([]);
 
+  useEffect(() => {
+    const fetchBanks = async () => {
+      const resHistory = await fetch(`${ENDPOINT}/user/accounts`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
-    const TransactionCard = ({ item }) => {
-      return (
-        <View style={styles.card}>
-          
-          <Text style={styles.cardText}>ID: {item.id}</Text>
-          <Text style={styles.cardText}>Nickname: {item.nickname}</Text>
-          <Text style={styles.cardText}>Bank Code TED: {item.BankCodeTed}</Text>
-          <Text style={styles.cardText}>Bank Code PIX: {item.BankCodePIX}</Text>
-          <Text style={styles.cardText}>Branch Code: {item.BranchCode}</Text>
-          <Text style={styles.cardText}>Account Number: {item.AccountNumber}</Text>
-          <Text style={styles.cardText}>PIX Key: {item.PIXKey}</Text>
-        </View>
-      );
+      if (resHistory.status === 401) {
+        navigation.navigate('Login');
+        return;
+      }
+
+      if (resHistory.status === 200) {
+        const bodyJson = await resHistory.json();
+        const BanksData = bodyJson['accounts'] || [];
+        setBanks(BanksData);
+      }
     };
-    
+
+    fetchBanks();
+  }, []);
+
+  const formatId = (id) => {
+    const firstChars = id.slice(0, 3);
+    const lastChars = id.slice(-3);
+    return `${firstChars}...${lastChars}`;
+  };
+  
+
+  const TransactionCard = ({ item }) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.idContainer}>
+          <Text style={styles.cardText}>ID: {formatId(item.id)}</Text>
+          <TouchableOpacity onPress={() => alert(item.id)}>
+            <Text style={styles.showLink}>Mostrar</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.cardText}>Nickname: {item.accountNickname}</Text>
+        <Text style={styles.cardText}>Bank Code TED: {item.bankCodeTED}</Text>
+        <Text style={styles.cardText}>Bank Code PIX: {item.bankCodePIX}</Text>
+        <Text style={styles.cardText}>Branch Code: {item.branchCode}</Text>
+        <Text style={styles.cardText}>Account Number: {item.accountNumber}</Text>
+        <Text style={styles.cardText}>PIX Key: {item.pixKey}</Text>
+      </View>
+    );
+  };
+  
+
+  const navigation = useNavigation();
+  const handleAddBank = () => {
+    navigation.navigate("ChooseBank");
+  };
+
   return (
+    <ScrollView vertical>
     <View style={styles.container}>
       <View style={styles.header}>
-     
-        <Text style={styles.title}>Bank accounts</Text>  
-          <TouchableOpacity style={styles.depositButton}>
-            <Text style={styles.buttonText}>ADD BANK</Text>
-          </TouchableOpacity>
-        
+        <Text style={styles.title}>Bank accounts</Text>
+        <TouchableOpacity style={styles.depositButton} onPress={handleAddBank}>
+          <Text style={styles.buttonText}>ADD BANK</Text>
+        </TouchableOpacity>
       </View>
 
-
       <View style={styles.whiteBox}>
-       
         <Text style={styles.boxSubtitle}>To remove or update a bank account, contact us at sac@brla.digital. Learn about supported bank accounts here.</Text>
       </View>
 
-     
-      
       <View style={styles.transactions}>
         <Text style={styles.transactionsTitle}>Accounts</Text>
         <FlatList
-          horizontal
-          data={data}
-          renderItem={({ item }) => <TransactionCard item={item} />}
-          keyExtractor={(item) => item.id.toString()}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={width}
-          decelerationRate="fast"
-        />
-      </View>
-    
+  
+  data={banks}
+  renderItem={({ item }) => <TransactionCard item={item} />}
+  keyExtractor={(item) => item.id.toString()}
+
+  ListEmptyComponent={
+    <View style={styles.emptyCard}>
+      <Image source={emptyImage} style={styles.emptyImage} />
+      <Text style={styles.emptyText}>No Accounts</Text>
     </View>
+  }
+/>
+      </View>
+    </View>
+    </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -214,6 +232,43 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     marginBottom: 6,
   },
+
+  idContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  showLink: {
+    color: '#00dc84',
+    marginLeft: 8,
+  },
+
+  emptyCard: {
+    width: width - 32,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  emptyImage: {
+    width: 100, // Ajuste o tamanho da imagem conforme necessário
+    height: 100, // Ajuste o tamanho da imagem conforme necessário
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+  },
+  
 
 
 });

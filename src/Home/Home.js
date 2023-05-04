@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, resizeMode  } from 'react-native'; // Adicionei ScrollView aqui
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, resizeMode, SafeAreaView  } from 'react-native'; // Adicionei ScrollView aqui
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ferramenta from './ferramenta.png'
 import { IconButton, Drawer } from 'react-native-paper';
 import { Alert } from 'react-native'; // Add Alert import
 import { ENDPOINT} from '../variaveis';
-
+import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 
 
 const Home = (props) => {
+  const navigation = useNavigation();
   const [drawerVisible, setDrawerVisible] = React.useState(false); // Adicione este estado para controlar a visibilidade do Drawer
 
   const toggleDrawer = () => {
@@ -103,19 +104,31 @@ const Home = (props) => {
     fetchData();
     console.log(historyData)
   }, []);
-    const TransactionCard = ({ item }) => {
-      return (
-      
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{item.type} - {item.status}</Text>
-          <Text style={styles.cardText}>ID: {item.id}</Text>
-          <Text style={styles.cardText}>Date: {item.createdAt}</Text>
-          <Text style={styles.cardText}>Wallet Address: {item.walletAddress}</Text>
-          <Text style={styles.cardText}>Chain: {item.chain}</Text>
-          <Text style={styles.cardText}>Amount: {item.amount}</Text>
-        </View>
-      );
-    };
+  const formatId = (id) => {
+    const firstChars = id.slice(0, 3);
+    const lastChars = id.slice(-3);
+    return `${firstChars}...${lastChars}`;
+  };
+  
+  const TransactionCard = ({ item }) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{item.type} - {item.status}</Text>
+       
+          <View style={styles.idContainer}>
+  <Text style={styles.cardText}>ID: {formatId(item.id)}</Text>
+          <TouchableOpacity onPress={() => alert(item.id)}>
+          <Text style={styles.showLink}>Mostrar</Text>
+          </TouchableOpacity>
+          </View>
+        <Text style={styles.cardText}>Date: {formatDate(item.createdAt)}</Text>
+        <Text style={styles.cardText}>Status: {item.status}</Text>
+        <Text style={styles.cardText}>Type: {item.type}</Text>
+        <Text style={styles.cardText}>Amount: {item.amount}</Text>
+      </View>
+    );
+  };
+  
 
     const handlePassKYC = async () => {
       try {
@@ -140,9 +153,47 @@ const Home = (props) => {
     const navigateToAddWallet = () => {
       props.navigation.navigate('AddWallet');
     };
+
+    const [wallets, setWallets] = useState([]);
+
+    useEffect(() => {
+      const fetchWallets = async () => {
+        const resHistory = await fetch(`${ENDPOINT}/user/wallets`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+  
+        if (resHistory.status === 401) {
+          navigation.navigate('Login');
+          return;
+        }
+  
+        if (resHistory.status === 200) {
+          const bodyJson = await resHistory.json();
+          const WalletsData = bodyJson['wallets'] || [];
+          setWallets(WalletsData);
+        }
+      };
+  
+      fetchWallets();
+    }, []);
+
+
+  
+    const handleDepositClick = () => {
+      navigation.navigate("Deposit");
+    };
+
+    const handleTransferClick = () => {
+      navigation.navigate("Withdraw");
+    };
+  
+  
     
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <>
+    <ScrollView vertical>
    {drawerVisible && (
   <Drawer.Section style={styles.drawer}>
     {renderDrawerItem("Profile", () => {
@@ -177,10 +228,10 @@ const Home = (props) => {
           <TouchableOpacity style={[styles.linkWalletButton]} onPress={navigateToAddWallet}>
             <Text style={[styles.buttonText, { color: 'white', background: '#008884' }]}>LINK WALLET</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.transferButton}>
+          <TouchableOpacity style={styles.transferButton} onPress={handleTransferClick}>
             <Text style={[styles.buttonText, { color: '#00dc84' }]}>TRANSFER</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.depositButton}>
+          <TouchableOpacity style={styles.depositButton} onPress={handleDepositClick}>
             <Text style={styles.buttonText}>DEPOSIT</Text>
           </TouchableOpacity>
         </View>
@@ -209,26 +260,29 @@ const Home = (props) => {
       <View style={styles.transactions}>
         <Text style={styles.transactionsTitle}>Transactions</Text>
       
-        {transactionData.length === 0 ? (
-          <View style={styles.transactionEmptyState}>
-          <Image source={require('./wallet.png')} resizeMode="contain" style={{ width: 100, height: 100 }} />
-          <Text style={{ marginTop: 10 }}>No Transactions</Text>
-        </View>
-        ) : (
-          <FlatList
-          horizontal
-          data={historyData}
-          renderItem={({ item }) => <TransactionCard item={item} />}
-          keyExtractor={(item) => item.id.toString()}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={width}
-          decelerationRate="fast"
-        />
-        )}
+        {historyData.length === 0 ? (
+  <View style={styles.transactionEmptyState}>
+    <Image source={require('./wallet.png')} resizeMode="contain" style={{ width: 100, height: 100 }} />
+    <Text style={{ marginTop: 10 }}>No Transactions</Text>
+  </View>
+) : (
+  <FlatList
+    horizontal
+    data={historyData}
+    renderItem={({ item }) => <TransactionCard item={item} />}
+    keyExtractor={(item) => item.id.toString()}
+    showsHorizontalScrollIndicator={false}
+    snapToInterval={width}
+    decelerationRate="fast"
+  />
+)}
+
       </View>
      
     </View>
+    </ScrollView>
     </>
+    </SafeAreaView>
   );
 };
 
@@ -374,6 +428,16 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginTop: 24,
     width: width - 32, // Ajuste a largura do cartão para ocupar a tela inteira
+  },
+  showLink: {
+    color: '#00dc84',
+    marginLeft: 8,
+    marginBottom:4
+  },
+
+  idContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   

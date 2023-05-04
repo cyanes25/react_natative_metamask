@@ -1,36 +1,54 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions  } from 'react-native'; // Adicionei ScrollView aqui
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, FlatList, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { ENDPOINT} from '../variaveis';
 const { width } = Dimensions.get('window');
 
-
 const Profile = () => {
-  const data = [
-    {
-      Name: 1,
-      Role: 'Teste',
-      Email: '000000',
-      Password: '000000',
-      
-    }
+  const [users, setUsers] = useState([]);
+  const navigation = useNavigation();
   
-  
-  ];
+  useEffect(() => {
+    const fetchUser = async () => {
+      const resHistory = await fetch(`${ENDPOINT}/user/info`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
+      if (resHistory.status === 401) {
+        navigation.navigate('Login');
+        return;
+      }
 
-    const TransactionCard = ({ item }) => {
-      return (
-        <View style={styles.card}>
-          
-          <Text style={styles.cardText}>NAME:                {item.Name}</Text>
-          <Text style={styles.cardText}>ROLE:                {item.Role}</Text>
-          <Text style={styles.cardText}>EMAIL:               {item.Email}</Text>
-          <Text style={styles.cardText}>PASSWORD:     {item.Password}</Text>
-          
-        </View>
-      );
+      if (resHistory.status === 200) {
+        const bodyJson = await resHistory.json();
+        const UserData = bodyJson || [];
+        setUsers([UserData]);
+        console.log(UserData);
+      }
     };
-    
+
+    fetchUser();
+  }, []);
+
+  const TransactionCard = ({ item }) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.cardText}>NAME: {item.firstName} {item.lastName}</Text>
+        <Text style={styles.cardText}>KYC: Level {item.kycInfo.level}</Text>
+        <Text style={styles.cardText}>EMAIL: {item.email}</Text>
+        <Text style={styles.cardText}>PASSWORD: ********</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ChangePassword')}
+          style={styles.changePasswordButton}
+        >
+          <Text style={styles.changePasswordButtonText}>Change Password</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,14 +69,14 @@ const Profile = () => {
       <View style={styles.transactions}>
         <Text style={styles.transactionsTitle}>Profile</Text>
         <FlatList
-          horizontal
-          data={data}
-          renderItem={({ item }) => <TransactionCard item={item} />}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={width}
-          decelerationRate="fast"
-        />
+        horizontal
+        data={users}
+        renderItem={({ item }) => <TransactionCard item={item} />}
+        keyExtractor={(item) => item.email}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={width}
+        decelerationRate="fast"
+      />
       </View>
     
     </View>
@@ -200,6 +218,20 @@ const styles = StyleSheet.create({
     color: '#08383f',
     marginRight: 'auto',
     marginBottom: 6,
+  },
+
+  changePasswordButton: {
+    backgroundColor: '#008884',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 20,
+  },
+  changePasswordButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
   },
 
 

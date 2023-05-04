@@ -65,6 +65,14 @@ const MMSDK = new MetaMaskSDK({
 });
 
 function Burn() {
+  const infuraProjectId = 'brla_mobile';
+  const network = 'polygon-mumbai'; // Substitua 'mainnet' pela rede Polygon Mumbai
+  const polygonRpcUrl = 'https://rpc-mumbai.maticvigil.com'; // URL do RPC para a rede Polygon Mumbai
+  
+  
+
+  const provider = new ethers.providers.JsonRpcProvider(infuraUrl);
+
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
@@ -97,7 +105,8 @@ function Burn() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [users, setUsers] = useState([]);
-  
+  const [balance, setBalance] = useState(0);
+
   useEffect(() => {
     const fetchBanks = async () => {
       const resHistory = await fetch(`${ENDPOINT}/user/accounts`, {
@@ -136,6 +145,15 @@ function Burn() {
     const inpageProvider = new MetaMaskInpageProvider(ethereum);
     const provider = new ethers.providers.Web3Provider(inpageProvider);
     const balance = await provider.getBalance(walletAddress);
+
+   async function getBalance(walletAddress) {
+  const balance = await provider.getBalance(walletAddress);
+  console.log('Saldo:', ethers.utils.formatEther(balance));
+  return balance;
+}
+
+const walletBalance = await getBalance(walletAddress);
+setBalance(walletBalance);
 
   
   

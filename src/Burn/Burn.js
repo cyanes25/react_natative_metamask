@@ -33,10 +33,10 @@ import {
 } from '@metamask/sdk-communication-layer';
 import crypto from 'crypto';
 import {encrypt} from 'eciesjs';
-import {LogBox, TextInput, Image, Platform} from 'react-native';
+import {LogBox, TextInput, Image, Platform, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import { ENDPOINT} from '../variaveis';
+import { ENDPOINT, BRLA_CONTRACT_ADDRESSES} from '../variaveis';
 import {useNavigation} from '@react-navigation/native';
 import { BRLAContractAbi } from '../abis';
 import "react-native-get-random-values";
@@ -67,14 +67,7 @@ const MMSDK = new MetaMaskSDK({
 });
 
 function Burn() {
-  const infuraProjectId = 'brla_mobile';
-  const network = 'polygon-mumbai'; // Substitua 'mainnet' pela rede Polygon Mumbai
-  const polygonRpcUrl = 'https://rpc-mumbai.maticvigil.com'; // URL do RPC para a rede Polygon Mumbai
   
-  const infuraUrl = `https://${network}.infura.io/v3/${infuraProjectId}`;
-
-  const provider = new ethers.providers.JsonRpcProvider(infuraUrl);
-
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
@@ -142,8 +135,15 @@ function Burn() {
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddress = accounts[0];
-    const provider = new ethers.providers.JsonRpcProvider(polygonRpcUrl);
-    BRLA_CONTRACT_ADDRESSES='0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
+    const provider = new ethers.providers.Web3Provider(ethereum);
+
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    const chainIdDecimal = parseInt(chainId, 16);
+
+    const chainName = getChainName(chainIdDecimal); // Nome da rede
+
+    const BRLA_CONTRACT_ADDRESS = BRLA_CONTRACT_ADDRESSES[chainIdDecimal];
+
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
   
     // 2. Use a função `balanceOf` para obter o saldo do usuário
@@ -173,6 +173,9 @@ function Burn() {
     const fromAddress = accounts[0];
   
     const provider = new ethers.providers.Web3Provider(ethereum);
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    const chainIdDecimal = parseInt(chainId, 16);
+    const BRLA_CONTRACT_ADDRESS = BRLA_CONTRACT_ADDRESSES[chainIdDecimal];
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESS, BRLAContractAbi, provider);
   
     const SECOND = 1000;
@@ -312,11 +315,17 @@ function Burn() {
       </Text>
     </Text>
     <TouchableOpacity
-      style={styles.burnButton}
-      onPress={handleBurn}
-      disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
-      <Text style={styles.buttonText}>BURN</Text>
-    </TouchableOpacity>
+  style={[
+    styles.burnButton,
+    !selectedBank || !burnValue || parseFloat(burnValue) <= 0
+      ? styles.burnButtonDisabled
+      : {},
+  ]}
+  onPress={handleBurn}
+  disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
+  <Text style={styles.buttonText}>BURN</Text>
+</TouchableOpacity>
+
   </>
 )}
 
@@ -417,6 +426,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     marginBottom: 24,
+    opacity: 1,
+  },
+  burnButtonDisabled: {
+    opacity: 0.5,
   },
   buttonText: {
     color: 'white',

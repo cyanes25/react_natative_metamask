@@ -160,9 +160,7 @@ function AddWallet() {
             
       
             const chainId = await ethereum.request({ method: 'eth_chainId' });
-            const chainIdHex = "0x1";
-            const chainIdDecimal = parseInt(chainIdHex, 16);
-
+            const chainIdDecimal = parseInt(chainId, 16);
             const chainName = getChainName(chainIdDecimal); // Nome da rede
             console.log('Sending request to:', `${ENDPOINT}/user/wallets`);
             const response = await fetch(`${ENDPOINT}/user/wallets`, {

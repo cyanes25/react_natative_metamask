@@ -65,7 +65,7 @@ const MMSDK = new MetaMaskSDK({
 });
 
 function Burn() {
-  
+  const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
@@ -140,7 +140,7 @@ function Burn() {
 
     const chainName = getChainName(chainIdDecimal); // Nome da rede
 
-    const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657';
+  
 
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
   

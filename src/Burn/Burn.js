@@ -36,7 +36,7 @@ import {encrypt} from 'eciesjs';
 import {LogBox, TextInput, Image, Platform, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import BackgroundTimer from 'react-native-background-timer';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import { ENDPOINT, BRLA_CONTRACT_ADDRESSES} from '../variaveis';
+import { ENDPOINT} from '../variaveis';
 import {useNavigation} from '@react-navigation/native';
 import { BRLAContractAbi } from '../abis';
 import "react-native-get-random-values";

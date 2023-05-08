@@ -9,12 +9,12 @@ import {
   FlatList,
   Dimensions,
   Modal,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from 'react-native';
 import { useNavigation  } from '@react-navigation/native';
 import { ENDPOINT } from '../variaveis';
 import Toast from 'react-native-toast-message';
-import {Picker} from '@react-native-picker/picker'
 const AddWalletButton = () => {
   const navigation = useNavigation();
 
@@ -37,11 +37,15 @@ const WalletItem = ({ item }) => {
 };
 
 
+
 const Mint = () => {
+  const [walletsListVisible, setWalletsListVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
 
-  
+  const toggleWalletsListVisible = () => {
+    setWalletsListVisible(!walletsListVisible);
+  };
 
   const navigation = useNavigation();
   const [wallets, setWallets] = useState([]);
@@ -151,21 +155,40 @@ const Mint = () => {
     setSelectedWallet(selectedWallet);
   };
   
-  
-  
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+ 
   return (
-    <SafeAreaView style={{ flex: 1 }}> 
+    <View>
+      
     <View style={styles.container}>
       <Text style={styles.walletLabel}>Select your Wallet</Text>
-      <Picker
-  selectedValue={selectedWallet}
-  style={styles.walletPicker}
-  onValueChange={(itemValue, itemIndex) => handleWalletSelection(itemValue)}>
-  {wallets.map((wallet, index) => (
-    <Picker.Item key={wallet.id.toString()} label={wallet.name} value={wallet} />
-  ))}
-</Picker>
+    
+      <TouchableOpacity
+          style={styles.walletPicker}
+          onPress={toggleWalletsListVisible}
+        >
+          <Text style={styles.walletText}>
+            {selectedWallet ? selectedWallet.name : 'Choose Wallet'}
+          </Text>
+        </TouchableOpacity>
 
+        {walletsListVisible && (
+          <ScrollView style={styles.walletsList}>
+            {wallets.map((wallet) => (
+              <TouchableOpacity
+                key={wallet.id}
+                style={styles.walletItem}
+                onPress={() => {
+                  setSelectedWallet(wallet);
+                  setWalletsListVisible(false);
+                }}
+              >
+                <Text style={styles.walletText}>{wallet.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
       <View style={styles.whiteBox}>
         
         <Text style={styles.boxText}>
@@ -225,7 +248,7 @@ const Mint = () => {
     </Modal>
   
     </View>
-    </SafeAreaView>
+    </View>
   );
 };
 const styles = StyleSheet.create({
@@ -329,6 +352,27 @@ const styles = StyleSheet.create({
     paddingLeft:4
  
   },
+
+  viewContainer: { marginHorizontal: 16, zIndex: 1 },
+    androidContainer: {
+      minHeight: 500,
+      marginBottom: -428,
+    },
+
+    walletPicker: {
+      backgroundColor: 'white',
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      marginBottom: 16,
+    },
+    walletsList: {
+      backgroundColor: 'white',
+      borderRadius: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      maxHeight: 200,
+    },
 
 
 });

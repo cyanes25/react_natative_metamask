@@ -188,6 +188,7 @@ function AddWallet() {
           };
 
     return (
+ 
       <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <Image source={require('./logo_corpo.png')} style={styles.logo} />

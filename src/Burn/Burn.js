@@ -42,8 +42,6 @@ import { BRLAContractAbi } from '../abis';
 import "react-native-get-random-values";
 import "@ethersproject/shims";
 import { ethers } from 'ethers';
-import {Picker} from '@react-native-picker/picker'
-
 // TODO how to properly make sure we only try to open link when the app is active?
 // current problem is that sdk declaration is outside of the react scope so I cannot directly verify the state
 // hence usage of a global variable.
@@ -154,9 +152,11 @@ function Burn() {
     
   };
   
-  const handleBankSelection = (bank) => {
-    setSelectedBank(bank);
+  const handleBankSelection = (item) => {
+    setSelectedBank(item.value);
   };
+  
+  
 
   const handleMaxValue = () => {
     setBurnValue(availableBRLA);
@@ -165,6 +165,19 @@ function Burn() {
   const handleBurn = () => {
     setModalVisible(true);
   };
+
+  
+  const getChainName = (chainId) => {
+    if ([1, 11155111].includes(chainId)) {
+      return 'Ethereum';
+    } else if ([137, 80001].includes(chainId)) {
+      return 'Polygon';
+    } else if ([66, 65].includes(chainId)) {
+      return 'OKC';
+    }
+    return 'Unknown';
+  };
+
 
   const handleConfirm = async () => {
     const ethereum = MMSDK.getProvider();
@@ -269,21 +282,53 @@ function Burn() {
 
     checkWalletConnection();
   }, []);
+  
+  const WalletItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.walletItem}>
+        <Text style={styles.walletText}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
+  const [walletsListVisible, setWalletsListVisible] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState(null);
+
+  const toggleWalletsListVisible = () => {
+    setWalletsListVisible(!walletsListVisible);
+  };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <SafeAreaView style={{ flex: 1 }}> 
     <View style={styles.container}>
       {hasBankAccount ? (
         <>
           <Text style={styles.title}>Select a bank account</Text>
-          <Picker
-            selectedValue={selectedBank}
-            style={styles.bankPicker}
-            onValueChange={(itemValue, itemIndex) => handleBankSelection(itemValue)}>
-            {banks.map((bank, index) => (
-              <Picker.Item key={index} label={bank.accountNickname} value={bank} />
+          <TouchableOpacity
+          style={styles.walletPicker}
+          onPress={toggleWalletsListVisible}
+        >
+          <Text style={styles.walletText}>
+            {selectedWallet ? selectedWallet.name : 'Choose Wallet'}
+          </Text>
+        </TouchableOpacity>
+
+        {walletsListVisible && (
+          <ScrollView style={styles.walletsList}>
+            {banks.map((bank) => (
+              <TouchableOpacity
+                key={bank.id}
+                style={styles.walletItem}
+                onPress={() => {
+                  setSelectedWallet(bank);
+                  setWalletsListVisible(false);
+                }}
+              >
+                <Text style={styles.walletText}>{bank.accountNickname}</Text>
+              </TouchableOpacity>
             ))}
-          </Picker>
+          </ScrollView>
+        )}
         </>
       ) : (
         <TouchableOpacity style={styles.addButton} onPress={handleAddBankAccount}>
@@ -358,6 +403,7 @@ function Burn() {
       </Modal>
     </View>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -475,6 +521,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+
+  walletPicker: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+  },
+  walletsList: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    maxHeight: 200,
+  },
+
+
 });
 
 

@@ -42,6 +42,7 @@ import { BRLAContractAbi } from '../abis';
 import "react-native-get-random-values";
 import "@ethersproject/shims";
 import { ethers } from 'ethers';
+
 // TODO how to properly make sure we only try to open link when the app is active?
 // current problem is that sdk declaration is outside of the react scope so I cannot directly verify the state
 // hence usage of a global variable.
@@ -65,7 +66,7 @@ const MMSDK = new MetaMaskSDK({
 });
 
 function Burn() {
-  const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
+
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
@@ -140,7 +141,7 @@ function Burn() {
 
     const chainName = getChainName(chainIdDecimal); // Nome da rede
 
-  
+    const BRLA_CONTRACT_ADDRESSES = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
 
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
   
@@ -188,7 +189,7 @@ function Burn() {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const chainId = await ethereum.request({ method: 'eth_chainId' });
     const chainIdDecimal = parseInt(chainId, 16);
-    const BRLA_CONTRACT_ADDRESS = BRLA_CONTRACT_ADDRESSES[chainIdDecimal];
+    const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESS, BRLAContractAbi, provider);
   
     const SECOND = 1000;

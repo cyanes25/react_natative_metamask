@@ -368,7 +368,7 @@ function Burn() {
       : {},
   ]}
   onPress={handleBurn}
-  disabled={!selectedBank || !burnValue || parseFloat(burnValue) <= 0}>
+  >
   <Text style={styles.buttonText}>BURN</Text>
 </TouchableOpacity>
 

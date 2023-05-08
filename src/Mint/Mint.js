@@ -159,6 +159,7 @@ const Mint = () => {
   const [value, setValue] = useState(null);
  
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View>
       
     <View style={styles.container}>
@@ -249,6 +250,7 @@ const Mint = () => {
   
     </View>
     </View>
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

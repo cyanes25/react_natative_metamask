@@ -122,7 +122,7 @@ function AddWallet() {
     
     // Often you need to format the output to something more user-friendly,
     // such as in ether (instead of wei)
-    const msgToSign = `I, ${users.firstName} ${users.lastName}, document ${users.kycInfo.documentData}, confirm that I am the owner of this address. Current time: ${Sigtime}`;
+    const msgToSign = `I, ${users.firstName} ${users.lastName}, document ${users.kycStatus.documentData}, confirm that I am the owner of this address. Current time: ${Sigtime}`;
 
   
   

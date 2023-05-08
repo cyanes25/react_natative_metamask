@@ -199,7 +199,7 @@ function Burn() {
     const spender = await BRLAContract.operatorWallet().call();
   
     const domain = {
-      chainId: chainId,
+      chainId: chainIdDecimal,
       name: 'BRLA Token',
       verifyingContract: BRLA_CONTRACT_ADDRESS,
       version: '1',

@@ -489,6 +489,8 @@
 				DEVELOPMENT_TEAM = GJMVKM63W8;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = reactNativeDemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BRLA;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -499,8 +501,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "brla-digital-swap";
+				PRODUCT_BUNDLE_IDENTIFIER = "brla-digital-swap";
 				PRODUCT_NAME = reactNativeDemo;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -517,6 +518,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = GJMVKM63W8;
 				INFOPLIST_FILE = reactNativeDemo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BRLA;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -527,8 +530,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "brla-digital-swap";
+				PRODUCT_BUNDLE_IDENTIFIER = "brla-digital-swap";
 				PRODUCT_NAME = reactNativeDemo;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -109,6 +109,7 @@ const MMSDK = new MetaMaskSDK({
   const [availableBRLA, setAvailableBRLA] = useState(-1);
   const [modalVisible, setModalVisible] = useState(false);
   const [BRLAc, setBRLAc] = useState('');
+  const [internalWalletId, setInternalWalletId] = useState(null);
 
   const [users, setUsers] = useState([]);
   
@@ -216,7 +217,7 @@ const MMSDK = new MetaMaskSDK({
     const domain = {
       chainId: chainIdDecimal,
       name: 'BRLA Token',
-      verifyingContract: BRLA_CONTRACT_ADDRESS,
+      verifyingContract: BRLA_CONTRACT_ADDRESSES,
       version: '1',
     };
   
@@ -252,7 +253,7 @@ const MMSDK = new MetaMaskSDK({
         method: 'POST',
         credentials: 'include',
         body: JSON.stringify({
-          accountId: selectedBankData.id,
+          accountId: selectedBank.id,
           walletId: internalWalletId,
           amount: burnValue * 100,
           permit: {

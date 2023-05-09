@@ -1,4 +1,4 @@
 
 
-export const ENDPOINT = "https://api.brla.digital:4567/v1";
+export const ENDPOINT = "https://api.brla.digital:5567/v1";
 

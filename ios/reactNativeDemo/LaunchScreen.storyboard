@@ -22,7 +22,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="logo_corpo" translatesAutoresizingMaskIntoConstraints="NO" id="customImageView">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="logo_fundo_branco" translatesAutoresizingMaskIntoConstraints="NO" id="customImageView">
                                 <rect key="frame" x="130" y="235" width="114" height="196"/>
                             </imageView>
                         </subviews>
@@ -45,7 +45,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo_corpo" width="114" height="196"/>
+        <image name="logo_fundo_branco" width="114" height="196"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

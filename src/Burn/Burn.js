@@ -210,9 +210,10 @@ const MMSDK = new MetaMaskSDK({
 
     const SECOND = 1000;
     const expiry = Math.trunc((Date.now() + 60 * 60 * SECOND) / SECOND);
-    const nonce = await BRLAContract.nonces(fromAddress).call();
+    const nonce = await BRLAContract.nonces(fromAddress);
+    const spender = await BRLAContract.operatorWallet();
+
     const value = (BigInt(burnValue * 100) * BigInt(10 ** 16)).toString();
-    const spender = await BRLAContract.operatorWallet().call();
   
     const domain = {
       chainId: chainIdDecimal,

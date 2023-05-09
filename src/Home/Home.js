@@ -222,9 +222,7 @@ const Home = (props) => {
       <View style={styles.header}>
      
         <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.passKycButton} onPress={handlePassKYC}>
-            <Text style={styles.buttonText}>PASS KYC</Text>
-          </TouchableOpacity>
+     
           <TouchableOpacity style={[styles.linkWalletButton]} onPress={navigateToAddWallet}>
             <Text style={[styles.buttonText, { color: 'white', background: '#008884' }]}>LINK WALLET</Text>
           </TouchableOpacity>
@@ -301,7 +299,10 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
+    justifyContent: 'center', // Altere de 'flex-end' para 'center'
+    alignItems: 'center',
     backgroundColor: 'transparent',
+    width: '100%', // Adicione esta linha
   },
   passKycButton: {
     backgroundColor: '#00dc84',

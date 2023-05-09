@@ -96,9 +96,6 @@ function Burn() {
   const [hasBankAccount, setHasBankAccount] = useState(false);
   const [burnValue, setBurnValue] = useState('');
   const [availableBRLA, setAvailableBRLA] = useState(-1);
-  const [Wallet, setWallet] = useState('x');
-  const [Chain, setChain] = useState('0');
-  const [BRLAContract, setBRLAContract] = useState('0');
   const [modalVisible, setModalVisible] = useState(false);
 
   const [users, setUsers] = useState([]);
@@ -132,24 +129,22 @@ function Burn() {
   const handleAddBankAccount = () => {
     navigation.navigate('ChooseBank');
   };
-  
   const handleConnect = async () => {
-  
     const ethereum = MMSDK.getProvider();
-    const provider = new ethers.providers.Web3Provider(ethereum);
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddress = accounts[0];
-    setWallet(walletAddress);
+    const provider = new ethers.providers.Web3Provider(ethereum);
+
     const chainId = await ethereum.request({ method: 'eth_chainId' });
     const chainIdDecimal = parseInt(chainId, 16);
-    setChain(chainIdDecimal);
+
     const chainName = getChainName(chainIdDecimal); // Nome da rede
 
     const BRLA_CONTRACT_ADDRESSES = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
 
     const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
-    setBRLAContract(BRLAContract);
+  
     // 2. Use a função `balanceOf` para obter o saldo do usuário
     const balance = await BRLAContract.balanceOf(walletAddress);
     setAvailableBRLA(ethers.utils.formatUnits(balance, 18));
@@ -186,11 +181,9 @@ function Burn() {
 
 
   const handleConfirm = async () => {
-    
-    
-    const fromAddress = Wallet;
+    const fromAddress ='0x';
   
-    const chainIdDecimal = Chain;
+    const chainIdDecimal = '80001';
     const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
     
     const SECOND = 1000;

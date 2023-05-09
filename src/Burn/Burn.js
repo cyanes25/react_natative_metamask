@@ -43,14 +43,37 @@ import "react-native-get-random-values";
 import "@ethersproject/shims";
 import { ethers } from 'ethers';
 
+
 // TODO how to properly make sure we only try to open link when the app is active?
 // current problem is that sdk declaration is outside of the react scope so I cannot directly verify the state
 // hence usage of a global variable.
-let canOpenLink = true;
+
+
+function Burn() {
+
+  let canOpenLink = true;
+
+
+const [appState, setAppState] = useState(AppState.currentState);
+
+useEffect(() => {
+  AppState.addEventListener('change', handleAppStateChange);
+
+  return () => {
+    AppState.removeEventListener('change', handleAppStateChange);
+  };
+}, []);
+
+const handleAppStateChange = (nextAppState) => {
+  if (appState.match(/inactive|background/) && nextAppState === 'active') {
+    console.log('App has come to the foreground!');
+  }
+  setAppState(nextAppState);
+};
 
 const MMSDK = new MetaMaskSDK({
   openDeeplink: (link: string) => {
-    if (canOpenLink) {
+    if (appState === 'active') {
       Linking.openURL(link);
     }
   },
@@ -65,7 +88,7 @@ const MMSDK = new MetaMaskSDK({
   },
 });
 
-function Burn() {
+
 
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';

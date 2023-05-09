@@ -97,6 +97,7 @@ function Burn() {
   const [burnValue, setBurnValue] = useState('');
   const [availableBRLA, setAvailableBRLA] = useState(-1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [BRLAc, setBRLAc] = useState('');
 
   const [users, setUsers] = useState([]);
   
@@ -148,6 +149,7 @@ function Burn() {
     // 2. Use a função `balanceOf` para obter o saldo do usuário
     const balance = await BRLAContract.balanceOf(walletAddress);
     setAvailableBRLA(ethers.utils.formatUnits(balance, 18));
+    setBRLAc(BRLAContract);
   
   
     
@@ -181,11 +183,12 @@ function Burn() {
 
 
   const handleConfirm = async () => {
-    const fromAddress ='0x';
+    const fromAddress ='0xE3401F9f1A229F4e76c3292dB47e1315DfB057e';
   
     const chainIdDecimal = '80001';
-    const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657'
-    
+    const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657';
+
+    const BRLAContract=BRLAc;
     const SECOND = 1000;
     const expiry = Math.trunc((Date.now() + 60 * 60 * SECOND) / SECOND);
     const nonce = await BRLAContract.nonces(fromAddress).call();

@@ -267,34 +267,9 @@ function Burn() {
   
 
 
-  useEffect(() => {
-    const checkWalletConnection = async () => {
-      const ethereum = MMSDK.getProvider();
-      try {
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        setIsWalletConnected(accounts.length > 0);
-      } catch (error) {
-        setIsWalletConnected(false);
-      }
-    };
 
-    checkWalletConnection();
-  }, []);
   
-  const WalletItem = ({ item }) => {
-    return (
-      <TouchableOpacity style={styles.walletItem}>
-        <Text style={styles.walletText}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
-  const [walletsListVisible, setWalletsListVisible] = useState(false);
-  const [selectedWallet, setSelectedWallet] = useState(null);
-
-  const toggleWalletsListVisible = () => {
-    setWalletsListVisible(!walletsListVisible);
-  };
-
+ 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <SafeAreaView style={{ flex: 1 }}> 

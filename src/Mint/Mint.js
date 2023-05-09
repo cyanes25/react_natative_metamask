@@ -10,7 +10,8 @@ import {
   Dimensions,
   Modal,
   SafeAreaView,
-  ScrollView
+  ScrollView,
+  Image
 } from 'react-native';
 import { useNavigation  } from '@react-navigation/native';
 import { ENDPOINT } from '../variaveis';
@@ -39,6 +40,7 @@ const WalletItem = ({ item }) => {
 
 
 const Mint = () => {
+  const [showQRCode, setShowQRCode] = useState(false); // Adicione esta linha
   const [walletsListVisible, setWalletsListVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState(null);
@@ -101,15 +103,14 @@ const Mint = () => {
       });
 
       if (resHistory.ok) {
-        setModalVisible(false); // Mova esta linha para dentro do if
+        setModalVisible(false);
+        setShowQRCode(true); // Mova esta linha para dentro do if
         Toast.show({
           type: 'success',
           text1: `Request successful. Please wait 1 minute for the Pix transaction to be processed.`,
         });
 
-        setTimeout(() => {
-          navigation.navigate('Home');
-        }, 3000); 
+        
 
 
       } else {
@@ -157,6 +158,46 @@ const Mint = () => {
   
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
+
+  const renderMintContent = () => {
+    if (showQRCode) {
+      return (
+        <>
+        <Text style={[styles.label, styles.centeredLabel]}>PIX QR Code</Text>
+        <Image
+          style={styles.qrCodeImage}
+          source={require('./qr_code.png')}
+        />
+        <Text style={[styles.label, styles.centeredLabel]}>
+          Amount: {parseFloat(amount).toFixed(2)} BRL
+        </Text>
+      </>
+      );
+    } else {
+      return (
+        <>
+          <Text style={styles.label}>Amount</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            step={0.5}
+            placeholder="Enter amount"
+            value={amount}
+            onChangeText={(text) => setAmount(text)}
+          />
+          <TouchableOpacity
+            style={styles.addWalletButton}
+            onPress={handleMintPress}
+          >
+            <Text style={styles.buttonText}>MINT</Text>
+          </TouchableOpacity>
+        </>
+      );
+    }
+  };
+
+
+
  
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -164,7 +205,8 @@ const Mint = () => {
       
     <View style={styles.container}>
       <Text style={styles.walletLabel}>Select your Wallet</Text>
-    
+
+      
       <TouchableOpacity
           style={styles.walletPicker}
           onPress={toggleWalletsListVisible}
@@ -199,22 +241,9 @@ const Mint = () => {
           on factors such as network traffic and banking hours.
         </Text>
       </View>
-      <Text style={styles.label}>Amount</Text>
+      
+      {renderMintContent()}
     
-    <TextInput
-      style={styles.input}
-      keyboardType="numeric"
-      step={0.5}
-      placeholder="Enter amount"
-      value={amount} // Adicione esta linha
-      onChangeText={(text) => setAmount(text)} // Adicione esta linha
-    />
-      <TouchableOpacity
-      style={styles.addWalletButton}
-      onPress={handleMintPress}
-    >
-      <Text style={styles.buttonText}>MINT</Text>
-    </TouchableOpacity>
     <Modal
         animationType="fade"
         transparent={true}
@@ -374,6 +403,17 @@ const styles = StyleSheet.create({
       paddingHorizontal: 16,
       paddingVertical: 12,
       maxHeight: 200,
+    },
+
+    qrCodeImage: {
+      width: 200,
+      height: 200,
+      alignSelf: 'center',
+      marginBottom: 16,
+    },
+
+    centeredLabel: {
+      textAlign: 'center',
     },
 
 

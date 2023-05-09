@@ -40,7 +40,7 @@ const HomeStack = () => {
       <HomeStackNavigator.Screen name="Profile" component={Profile} />
       <HomeStackNavigator.Screen name="ChangePassword" component={ChangePassword} />
       <HomeStackNavigator.Screen name="Limits" component={Limits} />
-      <HomeStackNavigator.Screen name="DelayedWithdrawals" component={DelayedWithdrawals} />
+      {/*<HomeStackNavigator.Screen name="DelayedWithdrawals" component={DelayedWithdrawals} /> */}
       <HomeStackNavigator.Screen name="AddWallet" component={AddWallet} />
       <HomeStackNavigator.Screen name="ChooseBank" component={ChooseBank} />
       <HomeStackNavigator.Screen
@@ -140,7 +140,7 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Deposit"
+        name="Buy"
         component={Deposit}
         options={{
           headerShown: false,
@@ -156,7 +156,7 @@ const MainTabs = () => {
           ),
         }}
       />
-      <Tab.Screen
+     {/* <Tab.Screen
         name="Withdraw"
         component={Withdraw}
         options={{
@@ -172,7 +172,7 @@ const MainTabs = () => {
             />
           ),
         }}
-      />
+      />*/}
     </Tab.Navigator>
   );
 };

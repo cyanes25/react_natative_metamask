@@ -181,11 +181,11 @@ const Home = (props) => {
 
   
     const handleDepositClick = () => {
-      navigation.navigate("Deposit");
+      navigation.navigate("Buy");
     };
 
     const handleTransferClick = () => {
-      navigation.navigate("Withdraw");
+      navigation.navigate("ChooseBank");
     };
   
   
@@ -204,10 +204,10 @@ const Home = (props) => {
       closeDrawer();
       props.navigation.navigate("Limits");
     })}
-    {renderDrawerItem("Delayed Withdrawals", () => {
+   {/* {renderDrawerItem("Delayed Withdrawals", () => {
       closeDrawer();
       props.navigation.navigate("DelayedWithdrawals");
-    })}
+    })} */}
     {/* Adicione mais páginas aqui */}
   </Drawer.Section>
 )}
@@ -227,10 +227,10 @@ const Home = (props) => {
             <Text style={[styles.buttonText, { color: 'white', background: '#008884' }]}>LINK WALLET</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.transferButton} onPress={handleTransferClick}>
-            <Text style={[styles.buttonText, { color: '#00dc84' }]}>TRANSFER</Text>
+            <Text style={[styles.buttonText, { color: '#00dc84' }]}>ADD BANK</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.depositButton} onPress={handleDepositClick}>
-            <Text style={styles.buttonText}>DEPOSIT</Text>
+            <Text style={styles.buttonText}>BUY</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
   },
   depositButton: {
     backgroundColor: '#008884',
-    paddingHorizontal: 6,
+    paddingHorizontal: 30,
     paddingVertical: 6,
     borderRadius: 4,
   },

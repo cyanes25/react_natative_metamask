@@ -72,19 +72,7 @@ function Burn() {
   const navigation = useNavigation();
 
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', handleAppState);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  const handleAppState = (appState: AppStateStatus) => {
-    console.debug(`AppState change: ${appState}`);
-    canOpenLink = appState === 'active';
-  };
-
+  
 
 
   const backgroundStyle = {
@@ -183,12 +171,19 @@ function Burn() {
 
 
   const handleConfirm = async () => {
-    const fromAddress ='0xE3401F9f1A229F4e76c3292dB47e1315BDfB057e';
+    const ethereum = MMSDK.getProvider();
+    
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const walletAddress = accounts[0];
+    const provider = new ethers.providers.Web3Provider(ethereum);
+
+    const fromAddress =accounts[0];
   
     const chainIdDecimal = '80001';
-    const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657';
+    const BRLA_CONTRACT_ADDRESSES = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657';
 
-    const BRLAContract=BRLAc;
+    const BRLAContract = new ethers.Contract(BRLA_CONTRACT_ADDRESSES, BRLAContractAbi, provider);
+
     const SECOND = 1000;
     const expiry = Math.trunc((Date.now() + 60 * 60 * SECOND) / SECOND);
     const nonce = await BRLAContract.nonces(fromAddress).call();

@@ -45,7 +45,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo_corpo" width="382" height="383"/>
+        <image name="logo_corpo" width="114" height="196"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

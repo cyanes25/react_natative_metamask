@@ -183,7 +183,7 @@ function Burn() {
 
 
   const handleConfirm = async () => {
-    const fromAddress ='0xE3401F9f1A229F4e76c3292dB47e1315DfB057e';
+    const fromAddress ='0xE3401F9f1A229F4e76c3292dB47e1315BDfB057e';
   
     const chainIdDecimal = '80001';
     const BRLA_CONTRACT_ADDRESS = '0x658e5EA3c7690f0626aFF87cEd6FC30021A93657';

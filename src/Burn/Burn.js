@@ -132,11 +132,11 @@ function Burn() {
   const handleAddBankAccount = () => {
     navigation.navigate('ChooseBank');
   };
-  const ethereum = MMSDK.getProvider();
-  const provider = new ethers.providers.Web3Provider(ethereum);
-
+  
   const handleConnect = async () => {
   
+    const ethereum = MMSDK.getProvider();
+    const provider = new ethers.providers.Web3Provider(ethereum);
     
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddress = accounts[0];

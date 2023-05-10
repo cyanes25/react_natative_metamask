@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.reactnativedemo"
+    namespace "com.brla"
     defaultConfig {
-        applicationId "com.reactnativedemo"
+        applicationId "com.brla"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -110,7 +110,7 @@ android {
             include (*reactNativeArchitectures())
         }
     }
-    signingConfigs {
+      signingConfigs {
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

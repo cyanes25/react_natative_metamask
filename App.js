@@ -25,6 +25,7 @@ import banksIcon from './src/Icons/bank.png';
 import walletsIcon from './src/Icons/wallet.png';
 import depositIcon from './src/Icons/deposit.png';
 import withdrawIcon from './src/Icons/withdraw.png';
+import KYCPFLevel1 from './src/KYCLevel1/KYCLevel1';
 const Tab = createBottomTabNavigator();
 const HomeStackNavigator = createStackNavigator();
 const Stack = createStackNavigator();
@@ -48,7 +49,9 @@ const HomeStack = () => {
         component={BankInformation}
         initialParams={{ bank: { name: 'Other', logo: require('./src/ChooseBank/images/bank.png') } }}
       />
+       <HomeStackNavigator.Screen name="KYCLevel1" component={KYCPFLevel1} />
     </HomeStackNavigator.Navigator>
+    
   );
 };
 const App = () => {
@@ -156,6 +159,7 @@ const MainTabs = () => {
           ),
         }}
       />
+      
      {/* <Tab.Screen
         name="Withdraw"
         component={Withdraw}

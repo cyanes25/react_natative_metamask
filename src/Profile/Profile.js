@@ -33,11 +33,22 @@ const Profile = () => {
     fetchUser();
   }, []);
 
+  const handleNextKYCLevel = (level) => {
+    if (level === 0) {
+      navigation.navigate('KYCLevel1');
+    } else if (level === 1) {
+      navigation.navigate('ConfirmInfo');
+    }
+  };
+
   const TransactionCard = ({ item }) => {
+    const kycLevel = users?.kyc?.level ?? 0;
     return (
       <View style={styles.card}>
         <Text style={styles.cardText}>NAME: {item.firstName} {item.lastName}</Text>
-        <Text style={styles.cardText}>KYC: Level {item.kycInfo.level}</Text>
+        <Text style={styles.cardText}>KYC: Level {kycLevel}
+          <Text onPress={() => handleNextKYCLevel(kycLevel)} style={styles.nextKycLevel}> Next KYC Level</Text>
+        </Text>
         <Text style={styles.cardText}>EMAIL: {item.email}</Text>
         <Text style={styles.cardText}>PASSWORD: ********</Text>
         <TouchableOpacity
@@ -235,6 +246,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+  },
+
+  nextKycLevel: {
+    color: '#00dc84',
+    fontSize: 14,
+    textDecorationLine: 'none',
+    marginLeft: 8,
   },
 
 

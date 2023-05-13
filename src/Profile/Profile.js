@@ -42,7 +42,7 @@ const Profile = () => {
   };
 
   const TransactionCard = ({ item }) => {
-    const kycLevel = users?.kyc?.level ?? 0;
+    const kycLevel = item?.kyc?.level ?? 0;
     return (
       <View style={styles.card}>
         <Text style={styles.cardText}>NAME: {item.firstName} {item.lastName}</Text>

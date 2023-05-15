@@ -26,6 +26,7 @@ import walletsIcon from './src/Icons/wallet.png';
 import depositIcon from './src/Icons/deposit.png';
 import withdrawIcon from './src/Icons/withdraw.png';
 import KYCPFLevel1 from './src/KYCLevel1/KYCLevel1';
+import KYCPFLevel2 from './src/KYCLevel2/KYCLevel2';
 const Tab = createBottomTabNavigator();
 const HomeStackNavigator = createStackNavigator();
 const Stack = createStackNavigator();
@@ -145,6 +146,24 @@ const MainTabs = () => {
       <Tab.Screen
         name="Buy"
         component={Deposit}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={depositIcon}
+              style={{
+                width: 24,
+                height: 24,
+                tintColor: focused ? '#08383f' : 'gray',
+              }}
+            />
+          ),
+        }}
+      />
+
+<Tab.Screen
+        name="KYC2"
+        component={KYCPFLevel2}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (

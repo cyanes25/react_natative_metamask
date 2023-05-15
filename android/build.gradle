@@ -20,3 +20,17 @@ buildscript {
     }
 }
 
+allprojects {
+    // other configs
+  
+    repositories {
+        // other repositories
+        maven {
+            url 'https://artifacts.idwall.services/repository/sdk-mobile-android/' // replace with your repository URL if it's different
+            credentials {
+                username 'adacapital.hector'
+                password 'GwneSc4gFtFuBgKi'
+            }
+        }
+    }
+}

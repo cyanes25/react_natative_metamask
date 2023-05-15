@@ -20,5 +20,7 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSCameraUsageDescription</key>
+<string>Descrição do porquê vocês desejam o acesso à câmera.</string>
 </dict>
 </plist>

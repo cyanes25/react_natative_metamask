@@ -8,7 +8,7 @@ import KYCPFLevel1 from '../KYCLevel1/KYCLevel1';
 
 IdwallSdk.initialize('sdk_auth_key');
 if (IdwallSdk.ios) {
-  IdwallSdk.ios.setupPublicKeys(["AHYMQP+2/KIo32qYcfqnmSn+N/K3IdWallKey=, tDilFQ4366PMdAmN/kyNiBQy24YHjuDs6Qsa6Oc/4c8="]);
+  IdwallSdk.ios.setupPublicKeys(["AHYMQP+2/KIo32qYcfqnmSn+N/K3IdWallKey=", "tDilFQ4366PMdAmN/kyNiBQy24YHjuDs6Qsa6Oc/4c8="]);
 }
 
 const KYCPFLevel2 = () => {
